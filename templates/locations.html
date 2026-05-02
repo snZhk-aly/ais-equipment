@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block page_title %}Местоположения оборудования{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3><i class="fas fa-map-marker-alt"></i> Всего локаций</h3>
+        <div class="stat-number">{{ total_locations }}</div>
+        <div class="stat-trend"><i class="fas fa-building"></i> точек размещения</div>
+    </div>
+    <div class="stat-card">
+        <h3><i class="fas fa-city"></i> Зданий/корпусов</h3>
+        <div class="stat-number">{{ buildings|length }}</div>
+        <div class="stat-trend"><i class="fas fa-location-dot"></i> по территории</div>
+    </div>
+    <div class="stat-card">
+        <h3><i class="fas fa-microchip"></i> Всего оборудования</h3>
+        <div class="stat-number">{{ total_equipment }}</div>
+        <div class="stat-trend"><i class="fas fa-boxes"></i> в эксплуатации</div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 30px; margin: 40px 0;">
+    <div class="table-container">
+        <div style="padding: 20px; background: var(--bg-hover); border-bottom: 1px solid var(--border-color);">
+            <h3 style="margin: 0;"><i class="fas fa-list"></i> Список местоположений</h3>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Местоположение</th>
+                    <th>Кол-во</th>
+                    <th>Типы</th>
+                    <th>Статусы</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for loc in locations %}
+                <tr>
+                    <td><strong><i class="fas fa-location-dot"></i> {{ loc.location }}</strong></td>
+                    <td><span class="status status-working">{{ loc.count }}</span></td>
+                    <td><small>{{ loc.types|truncate(30) }}</small></td>
+                    <td><small>{{ loc.statuses|truncate(20) }}</small></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" style="text-align: center;">Нет данных о местоположениях</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <div style="padding: 20px; background: var(--bg-hover); border-bottom: 1px solid var(--border-color);">
+            <h3 style="margin: 0;"><i class="fas fa-chart-simple"></i> По зданиям</h3>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Здание</th>
+                    <th>Оборудование</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for building, count in buildings.items() %}
+                <tr>
+                    <td><i class="fas fa-building"></i> {{ building }}</td>
+                    <td><span class="status status-working">{{ count }}</span></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="2" style="text-align: center;">Нет данных</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="table-container" style="padding: 30px; text-align: center;">
+    <h3 style="margin-bottom: 20px;"><i class="fas fa-map"></i> Интерактивная карта корпусов</h3>
+    <div style="background: var(--bg-hover); height: 300px; border-radius: var(--border-radius); display: flex; align-items: center; justify-content: center; border: 1px dashed var(--accent-blue);">
+        <div>
+            <div style="font-size: 4rem; margin-bottom: 10px;"><i class="fas fa-draw-polygon"></i></div>
+            <p><i class="fas fa-info-circle"></i> Схема расположения оборудования по корпусам колледжа</p>
+            <p><small>(интерактивная карта в разработке)</small></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

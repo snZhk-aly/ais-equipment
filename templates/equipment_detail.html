@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h2>{{ equipment.name }}</h2>
+    <div>
+        <a href="{{ url_for('edit_equipment', equip_id=equipment.id) }}" class="btn btn-primary">✏️ Редактировать</a>
+        <form action="{{ url_for('delete_equipment', equip_id=equipment.id) }}" method="post" style="display: inline;">
+            <button type="submit" class="btn btn-accent" onclick="return confirm('Удалить оборудование?')">🗑️ Удалить</button>
+        </form>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+    <div class="table-container" style="padding: 25px;">
+        <h3 style="margin-bottom: 20px;">Основная информация</h3>
+        <table style="width: 100%;">
+            <tr><td style="padding: 10px 0; font-weight: 600;">Инвентарный номер:</td><td><strong>#{{ equipment.inventory_number }}</strong></td></tr>
+            <tr><td style="padding: 10px 0; font-weight: 600;">Тип:</td><td>{{ equipment.type }}</td></tr>
+            <tr><td style="padding: 10px 0; font-weight: 600;">Статус:</td>
+                <td>
+                    {% if equipment.status == 'В работе' %}
+                        <span class="status status-working">{{ equipment.status }}</span>
+                    {% elif equipment.status == 'На ремонте' %}
+                        <span class="status status-repair">{{ equipment.status }}</span>
+                    {% elif equipment.status == 'На складе' %}
+                        <span class="status status-storage">{{ equipment.status }}</span>
+                    {% else %}
+                        <span class="status status-written-off">{{ equipment.status }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr><td style="padding: 10px 0; font-weight: 600;">Местоположение:</td><td>{{ equipment.location or 'Не указано' }}</td></tr>
+            <tr><td style="padding: 10px 0; font-weight: 600;">Ответственный:</td><td>{{ equipment.responsible_person or 'Не назначен' }}</td></tr>
+            <tr><td style="padding: 10px 0; font-weight: 600;">RFID метка:</td>
+                <td>{% if equipment.rfid_tag %}<span class="rfid">{{ equipment.rfid_tag }}</span>{% else %}—{% endif %}</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="table-container" style="padding: 25px;">
+        <h3 style="margin-bottom: 20px;">Дополнительные данные</h3>
+        <table style="width: 100%;">
+            <tr><td style="padding: 10px 0; font-weight: 600;">Дата покупки:</td><td>{{ equipment.purchase_date or 'Не указана' }}</td></tr>
+            <tr><td style="padding: 10px 0; font-weight: 600;">Гарантия:</td><td>{{ equipment.warranty_months or '0' }} месяцев</td></tr>
+            <tr><td style="padding: 10px 0; font-weight: 600;">Следующая проверка:</td>
+                <td>
+                    {% if equipment.next_check_date %}
+                        {% if equipment.next_check_date < now.strftime('%Y-%m-%d') %}
+                            <span style="color: #dc2626;">Просрочена ({{ equipment.next_check_date }})</span>
+                        {% else %}
+                            {{ equipment.next_check_date }}
+                        {% endif %}
+                    {% else %}
+                        Не назначена
+                    {% endif %}
+                </td>
+            </tr>
+            <tr><td style="padding: 10px 0; font-weight: 600;">Стоимость:</td><td>{{ equipment.price or '0' }} ₽</td></tr>
+            <tr><td style="padding: 10px 0; font-weight: 600;">Последнее ТО:</td><td>{{ equipment.last_maintenance or 'Не проводилось' }}</td></tr>
+        </table>
+    </div>
+</div>
+
+<div class="table-container" style="padding: 25px; margin-top: 30px;">
+    <h3 style="margin-bottom: 20px;">Примечания</h3>
+    <p>{{ equipment.notes or 'Нет примечаний' }}</p>
+</div>
+
+<div class="table-container" style="padding: 25px; margin-top: 30px;">
+    <h3 style="margin-bottom: 20px;">История изменений</h3>
+    {% if history %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Событие</th>
+                <th>Описание</th>
+                <th>Пользователь</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in history %}
+            <tr>
+                <td>{{ event.event_date }}</td>
+                <td><span class="status status-working" style="padding: 2px 8px;">{{ event.event_type }}</span></td>
+                <td>{{ event.description }}</td>
+                <td>{{ event.user or 'system' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="text-align: center; color: #666;">История изменений пуста</p>
+    {% endif %}
+</div>
+
+<div style="margin-top: 30px;">
+    <a href="{{ url_for('equipment_list') }}" class="btn btn-accent">← Вернуться к списку</a>
+</div>
+{% endblock %}

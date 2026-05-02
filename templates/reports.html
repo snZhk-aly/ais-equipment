@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block page_title %}Отчеты и аналитика{% endblock %}
+
+{% block content %}
+<h2><i class="fas fa-chart-line"></i> Отчеты и аналитика</h2>
+
+<!-- Статистика по статусам -->
+<div class="stats-grid">
+    {% for stat in status_stats %}
+    <div class="stat-card">
+        <h3>
+            {% if stat.status == 'В работе' %}<i class="fas fa-play-circle"></i>
+            {% elif stat.status == 'На ремонте' %}<i class="fas fa-tools"></i>
+            {% elif stat.status == 'На складе' %}<i class="fas fa-warehouse"></i>
+            {% elif stat.status == 'Списано' %}<i class="fas fa-trash"></i>
+            {% else %}<i class="fas fa-chart-simple"></i>{% endif %}
+            {{ stat.status or 'Не указан' }}
+        </h3>
+        <div class="stat-number">{{ stat.count }}</div>
+        <div class="stat-trend"><i class="fas fa-percent"></i> от общего числа</div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Ключевые показатели -->
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin: 40px 0;">
+    <div class="table-container" style="padding: 25px;">
+        <h3 style="margin-bottom: 20px;"><i class="fas fa-ruble-sign"></i> Общая стоимость</h3>
+        <div style="font-size: 2.5rem; font-weight: 800; color: var(--accent-blue);">{{ "%.2f"|format(total_price) }} ₽</div>
+    </div>
+
+    <div class="table-container" style="padding: 25px;">
+        <h3 style="margin-bottom: 20px;"><i class="fas fa-exclamation-triangle"></i> Проблемные места</h3>
+        <table style="width: 100%;">
+            <tr><td><i class="fas fa-user-slash"></i> Без ответственного:</td><td><span class="status status-repair">{{ no_responsible }}</span></td></tr>
+            <tr><td><i class="fas fa-map-pin"></i> Без местоположения:</td><td><span class="status status-storage">{{ no_location }}</span></td></tr>
+            <tr><td><i class="fas fa-clock"></i> Скоро поверка:</td><td><span class="status status-working">{{ expiring_soon }}</span></td></tr>
+        </table>
+    </div>
+
+    <div class="table-container" style="padding: 25px;">
+        <h3 style="margin-bottom: 20px;"><i class="fas fa-trophy"></i> Топ типов</h3>
+        <table style="width: 100%;">
+            {% for type in type_stats[:5] %}
+            <tr>
+                <td><i class="fas fa-microchip"></i> {{ type.type }}</td>
+                <td><span class="status status-working">{{ type.count }}</span></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+
+<!-- График по месяцам -->
+<div class="table-container" style="padding: 25px;">
+    <h3 style="margin-bottom: 20px;"><i class="fas fa-chart-line"></i> Добавления по месяцам</h3>
+    <div style="display: flex; gap: 20px; align-items: flex-end; height: 200px; margin: 30px 0;">
+        {% for month in monthly_stats %}
+        <div style="flex: 1; text-align: center;">
+            <div class="chart-bar" style="height: {{ month.count * 25 }}px; max-height: 150px; min-height: 20px;"></div>
+            <div style="margin-top: 10px;"><strong><i class="fas fa-calendar"></i> {{ month.month }}</strong></div>
+            <div><span class="status status-working">{{ month.count }}</span></div>
+        </div>
+        {% else %}
+        <p style="text-align: center; width: 100%;"><i class="fas fa-database"></i> Нет данных по месяцам</p>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Детальная статистика -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;">
+    <div class="table-container">
+        <div style="padding: 20px; background: var(--bg-hover); border-bottom: 1px solid var(--border-color);">
+            <h3 style="color: var(--text-primary); margin: 0;"><i class="fas fa-chart-pie"></i> Полная статистика по типам</h3>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr><th>Тип</th><th>Количество</th><th>%</th></tr>
+            </thead>
+            <tbody>
+                {% for type in type_stats %}
+                <tr>
+                    <td><i class="fas fa-microchip"></i> {{ type.type }}</td>
+                    <td>{{ type.count }}</td>
+                    <td>{{ (type.count / total * 100)|round(1) if total > 0 else 0 }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <div style="padding: 20px; background: var(--bg-hover); border-bottom: 1px solid var(--border-color);">
+            <h3 style="color: var(--text-primary); margin: 0;"><i class="fas fa-lightbulb"></i> Рекомендации</h3>
+        </div>
+        <div style="padding: 25px;">
+            {% if no_responsible > 0 %}
+            <p style="margin-bottom: 10px;"><i class="fas fa-user-slash"></i> <strong>{{ no_responsible }}</strong> единиц без ответственного</p>
+            {% endif %}
+            {% if no_location > 0 %}
+            <p style="margin-bottom: 10px;"><i class="fas fa-map-pin"></i> <strong>{{ no_location }}</strong> единиц без местоположения</p>
+            {% endif %}
+            {% if expiring_soon > 0 %}
+            <p style="margin-bottom: 10px;"><i class="fas fa-clock"></i> <strong>{{ expiring_soon }}</strong> единиц требуют поверки</p>
+            {% endif %}
+            {% if no_responsible == 0 and no_location == 0 and expiring_soon == 0 %}
+            <p><i class="fas fa-check-circle" style="color: var(--success);"></i> В системе полный порядок!</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Экспорт и печать -->
+<div style="display: flex; gap: 15px; justify-content: center; margin: 40px 0; flex-wrap: wrap;">
+    <a href="{{ url_for('export_excel') }}" class="btn btn-primary" target="_blank"><i class="fas fa-file-excel"></i> Экспорт в Excel</a>
+    <a href="{{ url_for('export_pdf') }}" class="btn btn-primary" target="_blank"><i class="fas fa-file-pdf"></i> Экспорт в PDF</a>
+    <a href="{{ url_for('print_report') }}" class="btn btn-outline" target="_blank"><i class="fas fa-print"></i> Версия для печати</a>
+    <button class="btn btn-outline" onclick="window.print()"><i class="fas fa-print"></i> Печать страницы</button>
+</div>
+{% endblock %}

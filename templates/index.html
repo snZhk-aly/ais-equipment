@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block page_title %}Панель управления{% endblock %}
+
+{% block content %}
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Всего оборудования</h3>
+        <div class="stat-number">{{ total }}</div>
+        <div class="stat-trend up"><i class="fas fa-arrow-up"></i> +{{ recent|length }} за месяц</div>
+    </div>
+    <div class="stat-card">
+        <h3>Активно</h3>
+        <div class="stat-number">{{ total - in_repair }}</div>
+        <div class="stat-trend"><i class="fas fa-check-circle"></i> в работе</div>
+    </div>
+    <div class="stat-card">
+        <h3>На ремонте</h3>
+        <div class="stat-number">{{ in_repair }}</div>
+        <div class="stat-trend"><i class="fas fa-tools"></i> требуют внимания</div>
+    </div>
+    <div class="stat-card">
+        <h3>Просрочено</h3>
+        <div class="stat-number">{{ overdue }}</div>
+        <div class="stat-trend down"><i class="fas fa-exclamation-triangle"></i> проверка просрочена</div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+    <div class="table-container">
+        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color);">
+            <h3 style="margin: 0; font-size: 0.8rem;"><i class="fas fa-history"></i> Последние добавления</h3>
+        </div>
+        <table class="data-table">
+            <thead>
+                <tr><th>Инв. номер</th><th>Наименование</th><th>Статус</th></tr>
+            </thead>
+            <tbody>
+                {% for item in recent %}
+                <tr>
+                    <td>{{ item.inventory_number }}</td>
+                    <td>{{ item.name }}</td>
+                    <td><span class="status status-working">{{ item.status }}</span></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="table-container">
+        <div style="padding: 16px 20px; border-bottom: 1px solid var(--border-color);">
+            <h3 style="margin: 0; font-size: 0.8rem;"><i class="fas fa-chart-pie"></i> Распределение по типам</h3>
+        </div>
+        <table class="data-table">
+            <thead><tr><th>Тип</th><th>Количество</th><th>Доля</th></tr></thead>
+            <tbody>
+                {% for type in types_stats %}
+                <tr>
+                    <td>{{ type.type }}</td>
+                    <td><strong>{{ type.c }}</strong></td>
+                    <td>{{ ((type.c / total) * 100)|round(1) if total > 0 else 0 }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div style="margin-top: 32px; text-align: center;">
+    <a href="{{ url_for('add_equipment') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Добавить оборудование</a>
+    <a href="{{ url_for('equipment_list') }}" class="btn btn-outline" style="margin-left: 12px;"><i class="fas fa-list"></i> Перейти к списку</a>
+</div>
+{% endblock %}

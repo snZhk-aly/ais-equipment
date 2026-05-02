@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block page_title %}Реестр оборудования{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: flex-end; margin-bottom: 24px;">
+    <a href="{{ url_for('add_equipment') }}" class="btn btn-primary"><i class="fas fa-plus"></i> Добавить</a>
+</div>
+
+<div class="filters-bar">
+    <form method="get" style="display: flex; gap: 16px; flex-wrap: wrap;">
+        <input type="text" name="search" class="form-control" placeholder="Поиск по названию, инвентарному номеру..." value="{{ search_query }}" style="flex: 2;">
+        <select name="status" class="form-control" style="flex: 1;">
+            <option value="">Все статусы</option>
+            <option value="В работе" {% if current_status == 'В работе' %}selected{% endif %}>В работе</option>
+            <option value="На ремонте" {% if current_status == 'На ремонте' %}selected{% endif %}>На ремонте</option>
+            <option value="На складе" {% if current_status == 'На складе' %}selected{% endif %}>На складе</option>
+            <option value="Списано" {% if current_status == 'Списано' %}selected{% endif %}>Списано</option>
+        </select>
+        <select name="type" class="form-control" style="flex: 1;">
+            <option value="">Все типы</option>
+            {% for type in types %}
+            <option value="{{ type.type }}" {% if current_type == type.type %}selected{% endif %}>{{ type.type }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="btn btn-primary"><i class="fas fa-search"></i> Применить</button>
+        <a href="{{ url_for('equipment_list') }}" class="btn btn-outline"><i class="fas fa-undo"></i> Сбросить</a>
+    </form>
+</div>
+
+<div class="table-container">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Инв. номер</th><th>Наименование</th><th>Тип</th><th>Статус</th>
+                <th>Местоположение</th><th>Ответственный</th><th>RFID</th><th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in equipments %}
+            <tr>
+                <td><strong>{{ item.inventory_number }}</strong></td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.type }}</td>
+                <td>
+                    {% if item.status == 'В работе' %}
+                        <span class="status status-working">{{ item.status }}</span>
+                    {% elif item.status == 'На ремонте' %}
+                        <span class="status status-repair">{{ item.status }}</span>
+                    {% elif item.status == 'На складе' %}
+                        <span class="status status-storage">{{ item.status }}</span>
+                    {% else %}
+                        <span class="status status-written-off">{{ item.status }}</span>
+                    {% endif %}
+                </td>
+                <td>{{ item.location or '—' }}</td>
+                <td>{{ item.responsible_person or '—' }}</td>
+                <td>{% if item.rfid_tag %}<span class="rfid">{{ item.rfid_tag }}</span>{% else %}—{% endif %}</td>
+                <td>
+                    <div style="display: flex; gap: 6px;">
+                        <a href="{{ url_for('equipment_detail', equip_id=item.id) }}" class="btn btn-outline btn-sm" title="Детали">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        <a href="{{ url_for('edit_equipment', equip_id=item.id) }}" class="btn btn-primary btn-sm" title="Изменить">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <form action="{{ url_for('delete_equipment', equip_id=item.id) }}" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-danger btn-sm" title="Удалить" onclick="return confirm('Удалить оборудование?')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" style="text-align: center; padding: 40px;">Нет оборудования</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div style="margin-top: 16px; text-align: right;">
+    <span class="stat-trend"><i class="fas fa-database"></i> Всего записей: {{ equipments|length }}</span>
+</div>
+{% endblock %}

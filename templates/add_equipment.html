@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <h2>➕ Добавление оборудования</h2>
+
+    <div class="form-container">
+        <form method="post">
+            <div class="form-group">
+                <label>Наименование <span style="color: red;">*</span></label>
+                <input type="text" name="name" class="form-control" required placeholder="Ноутбук HP ProBook" autofocus>
+            </div>
+
+            <div class="form-group">
+                <label>Тип <span style="color: red;">*</span></label>
+                <select name="type" class="form-control" required>
+                    <option value="">Выберите тип</option>
+                    <option value="Ноутбук">Ноутбук</option>
+                    <option value="Компьютер">Компьютер</option>
+                    <option value="Принтер">Принтер</option>
+                    <option value="МФУ">МФУ</option>
+                    <option value="Проектор">Проектор</option>
+                    <option value="Сервер">Сервер</option>
+                    <option value="Монитор">Монитор</option>
+                    <option value="Клавиатура">Клавиатура</option>
+                    <option value="Мышь">Мышь</option>
+                    <option value="Другое">Другое</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Инвентарный номер <span style="color: red;">*</span></label>
+                <input type="text" name="inventory_number" class="form-control" required placeholder="INV-001">
+            </div>
+
+            <div class="form-group">
+                <label>RFID метка</label>
+                <input type="text" name="rfid_tag" class="form-control" placeholder="RFID-001">
+                <small style="color: #fffff;">Уникальный номер метки (необязательно)</small>
+            </div>
+
+            <div class="form-group">
+                <label>Местоположение</label>
+                <input type="text" name="location" class="form-control" placeholder="Кабинет 301, Лаборатория 2">
+            </div>
+
+            <div class="form-group">
+                <label>Статус</label>
+                <select name="status" class="form-control">
+                    <option value="В работе">✅ В работе</option>
+                    <option value="На ремонте">🔧 На ремонте</option>
+                    <option value="На складе">📦 На складе</option>
+                    <option value="Списано">❌ Списано</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Ответственный</label>
+                <input type="text" name="responsible_person" class="form-control" placeholder="Иванов И.И.">
+            </div>
+
+            <div class="form-group">
+                <label>Дата покупки</label>
+                <input type="date" name="purchase_date" class="form-control">
+            </div>
+
+            <div class="form-group">
+                <label>Гарантия (месяцев)</label>
+                <input type="number" name="warranty_months" class="form-control" min="1" max="60" placeholder="12">
+            </div>
+
+            <div class="form-group">
+                <label>Стоимость (руб.)</label>
+                <input type="number" name="price" class="form-control" min="0" step="0.01" placeholder="50000">
+            </div>
+
+            <div class="form-group">
+                <label>Примечания</label>
+                <textarea name="notes" class="form-control" rows="3" placeholder="Дополнительная информация..."></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 30px;">
+                <button type="submit" class="btn btn-primary">💾 Сохранить</button>
+                <a href="{{ url_for('equipment_list') }}" class="btn btn-accent">↩️ Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

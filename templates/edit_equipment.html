@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <h2>✏️ Редактирование оборудования</h2>
+
+    <div class="form-container">
+        <form method="post">
+            <div class="form-group">
+                <label>Наименование <span style="color: red;">*</span></label>
+                <input type="text" name="name" class="form-control" value="{{ equipment.name }}" required>
+            </div>
+
+            <div class="form-group">
+                <label>Тип <span style="color: red;">*</span></label>
+                <select name="type" class="form-control" required>
+                    <option value="Ноутбук" {% if equipment.type == 'Ноутбук' %}selected{% endif %}>Ноутбук</option>
+                    <option value="Компьютер" {% if equipment.type == 'Компьютер' %}selected{% endif %}>Компьютер</option>
+                    <option value="Принтер" {% if equipment.type == 'Принтер' %}selected{% endif %}>Принтер</option>
+                    <option value="МФУ" {% if equipment.type == 'МФУ' %}selected{% endif %}>МФУ</option>
+                    <option value="Проектор" {% if equipment.type == 'Проектор' %}selected{% endif %}>Проектор</option>
+                    <option value="Сервер" {% if equipment.type == 'Сервер' %}selected{% endif %}>Сервер</option>
+                    <option value="Монитор" {% if equipment.type == 'Монитор' %}selected{% endif %}>Монитор</option>
+                    <option value="Клавиатура" {% if equipment.type == 'Клавиатура' %}selected{% endif %}>Клавиатура</option>
+                    <option value="Мышь" {% if equipment.type == 'Мышь' %}selected{% endif %}>Мышь</option>
+                    <option value="Другое" {% if equipment.type == 'Другое' %}selected{% endif %}>Другое</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Местоположение</label>
+                <input type="text" name="location" class="form-control" value="{{ equipment.location or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label>Статус</label>
+                <select name="status" class="form-control">
+                    <option value="В работе" {% if equipment.status == 'В работе' %}selected{% endif %}>✅ В работе</option>
+                    <option value="На ремонте" {% if equipment.status == 'На ремонте' %}selected{% endif %}>🔧 На ремонте</option>
+                    <option value="На складе" {% if equipment.status == 'На складе' %}selected{% endif %}>📦 На складе</option>
+                    <option value="Списано" {% if equipment.status == 'Списано' %}selected{% endif %}>❌ Списано</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Ответственный</label>
+                <input type="text" name="responsible_person" class="form-control" value="{{ equipment.responsible_person or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label>Примечания</label>
+                <textarea name="notes" class="form-control" rows="3">{{ equipment.notes or '' }}</textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; margin-top: 30px;">
+                <button type="submit" class="btn btn-primary">💾 Сохранить изменения</button>
+                <a href="{{ url_for('equipment_detail', equip_id=equipment.id) }}" class="btn btn-accent">↩️ Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

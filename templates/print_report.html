@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Печать отчета - СПК</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            color: #333;
+        }
+        h1 {
+            color: #1e3a8a;
+            border-bottom: 3px solid #d4ff00;
+            padding-bottom: 10px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #1e3a8a;
+        }
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            color: #666;
+        }
+        .stat-card .number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e3a8a;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 12px;
+        }
+        th {
+            background: #1e3a8a;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+        td {
+            padding: 8px 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        tr:nth-child(even) {
+            background: #f9fafb;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: right;
+            font-size: 12px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
+        @media print {
+            body { margin: 0; }
+            .no-print { display: none; }
+        }
+        .no-print {
+            margin-bottom: 20px;
+        }
+        .btn {
+            background: #1e3a8a;
+            color: white;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        .btn:hover {
+            background: #0a1a2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <button class="btn" onclick="window.print()">🖨️ Печать</button>
+        <button class="btn" onclick="window.close()">✖️ Закрыть</button>
+    </div>
+
+    <h1>Отчет по оборудованию СПК</h1>
+    <div class="header">
+        <div>Дата: {{ now.strftime('%d.%m.%Y %H:%M') }}</div>
+        <div>Всего записей: {{ total }}</div>
+    </div>
+
+    <div class="stats">
+        <div class="stat-card">
+            <h3>В работе</h3>
+            <div class="number">{{ working }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>На ремонте</h3>
+            <div class="number">{{ in_repair }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>На складе</h3>
+            <div class="number">{{ storage }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Списано</h3>
+            <div class="number">{{ written_off }}</div>
+        </div>
+        <div class="stat-card">
+            <h3>Всего</h3>
+            <div class="number">{{ total }}</div>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Инв. №</th>
+                <th>Наименование</th>
+                <th>Тип</th>
+                <th>Статус</th>
+                <th>Местоположение</th>
+                <th>Ответственный</th>
+                <th>Дата покупки</th>
+                <th>Стоимость</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in equipments %}
+            <tr>
+                <td>{{ item.inventory_number }}</td>
+                <td>{{ item.name }}</td>
+                <td>{{ item.type }}</td>
+                <td>{{ item.status }}</td>
+                <td>{{ item.location or '-' }}</td>
+                <td>{{ item.responsible_person or '-' }}</td>
+                <td>{{ item.purchase_date or '-' }}</td>
+                <td>{{ item.price or '0' }} ₽</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        Отчет сгенерирован автоматически • АИС "Цифровой паспорт оборудования" • Сургутский политехнический колледж
+    </div>
+</body>
+</html>

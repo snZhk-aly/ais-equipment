@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: ais-equipment
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
