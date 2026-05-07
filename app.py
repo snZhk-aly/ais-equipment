@@ -185,11 +185,29 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
     db = get_db()
-    user = db.execute('SELECT * FROM users WHERE id=?', (session['user_id'],)).fetchone()
+    if request.method == 'POST':
+        full_name = request.form.get('full_name', '').strip()
+        email = request.form.get('email', '').strip()
+        phone = request.form.get('phone', '').strip()
+
+        db.execute('''
+            UPDATE users 
+            SET full_name = ?, email = ?, phone = ?
+            WHERE id = ?
+        ''', (full_name, email, phone, session['user_id']))
+        db.commit()
+
+        # Обновляем имя в сессии, чтобы оно сразу поменялось в шапке
+        session['full_name'] = full_name
+
+        flash('Данные профиля обновлены', 'success')
+        return redirect(url_for('profile'))
+
+    user = db.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],)).fetchone()
     return render_template('profile.html', user=user)
 
 
