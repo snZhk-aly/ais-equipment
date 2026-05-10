@@ -622,11 +622,37 @@ body::before {
         display: none;
     }
 
-    .sidebar-nav li a {
-        justify-content: center;
-        padding: 12px;
-        margin: 4px 8px;
+    @media (max-width: 768px) {
+    .sidebar {
+        width: 260px;
     }
+
+    .sidebar-nav li a {
+        justify-content: flex-start;
+        gap: 12px;
+        padding: 10px 16px;
+    }
+
+    .sidebar-nav li a i {
+        width: 24px;
+        text-align: center;
+    }
+
+    .sidebar-nav li a span {
+        display: inline-block !important;
+        font-size: 0.9rem;
+        color: var(--text-primary);
+        margin-left: 0;
+    }
+
+    .sidebar-header .logo-text {
+        display: block;
+    }
+
+    .close-sidebar {
+        display: block;
+    }
+}
 
     .main-content {
         margin-left: 70px;
