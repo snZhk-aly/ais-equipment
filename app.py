@@ -4,9 +4,7 @@ from datetime import datetime, timedelta
 from functools import wraps
 import hashlib
 import os
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-import os
+
 
 # Регистрация шрифта с поддержкой кириллицы
 font_path = "C:/Windows/Fonts/arial.ttf"
