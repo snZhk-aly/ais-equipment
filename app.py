@@ -4,7 +4,17 @@ from datetime import datetime, timedelta
 from functools import wraps
 import hashlib
 import os
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+import os
 
+# Регистрация шрифта с поддержкой кириллицы
+font_path = "C:/Windows/Fonts/arial.ttf"
+if os.path.exists(font_path):
+    pdfmetrics.registerFont(TTFont('Arial', font_path))
+    font_name = 'Arial'
+else:
+    font_name = 'Helvetica'
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super-secret-key-for-college-project'
 app.config['DATABASE'] = 'database.db'
